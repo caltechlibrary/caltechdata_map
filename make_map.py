@@ -15,8 +15,9 @@ response = requests.get(url+'/?size=1000&q=subjects:thesis')
 hits = response.json()
 
 hover = HoverTool(tooltips=[
-    ("Thesis", "@identifier"),
-    ("Thesis", "@identifier"),
+    ("Title", "@title"),
+    ("Author", "@author"),
+    ("Year", "@year"),
 ])
 
 fig = figure(tools=[hover,'wheel_zoom','pan'], active_scroll='wheel_zoom', plot_height=600, plot_width=600)
@@ -33,6 +34,9 @@ print(len(hits['hits']['hits']))
 pt_lat=[]
 pt_lon=[]
 identifier=[]
+author = []
+title = []
+year = []
 x0=[]
 y0=[]
 x1=[]
@@ -52,41 +56,23 @@ for h in hits['hits']['hits']:
                 pt_lat=pt_lat+tlat
                 pt_lon= pt_lon+tlon
                 iden = []
+                auth = []
+                t = []
+                y = []
                 for i in range(4):
                     iden.append(metadata['identifier']['identifier'])
+                    auth.append(metadata['creators'][0]['creatorName'])
+                    t.append(metadata['titles'][0]['title'].split(':')[0])
+                    y.append(metadata['publicationYear'])
                 identifier=identifier+iden
-                #source = ColumnDataSource(
-                #   data=dict(
-                #        lat=tlat,
-                #        lon=tlon,
-                #        )
-                #)
-                #circle = Circle(x="lon", y="lat", size=15, fill_color="blue", fill_alpha=0.8, line_color=None)
-                #fig.add_glyph(source, circle) 
-                #source = ColumnDataSource(
-                #   data=dict(x0=[tlon[0]],y0=[tlat[0]],x1=[tlon[1]],y1=[tlat[1]])
-                #)
-                #segment =\
-                        #Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="blue",line_width=3)
-                #fig.add_glyph(source, segment)
-                #source = ColumnDataSource(
-                #   data=dict(x0=[tlon[2]],y0=[tlat[2]],x1=[tlon[3]],y1=[tlat[3]])
-                #)
-                #segment =\
-                        #Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="blue",line_width=3)
-                #fig.add_glyph(source, segment)
-                #source = ColumnDataSource(
-                #   data=dict(x0=[tlon[0]],y0=[tlat[0]],x1=[tlon[2]],y1=[tlat[2]])
-                #)
-                #segment =\
-                        #Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="blue",line_width=3)
-                #fig.add_glyph(source, segment)
-                #source = ColumnDataSource(
-                #   data=dict(x0=[tlon[1]],y0=[tlat[1]],x1=[tlon[3]],y1=[tlat[3]])
-                #)
-                #segment =\
-                        #Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="blue",line_width=3)
-                #fig.add_glyph(source, segment)
+                author=author+auth
+                title=title+t
+                year = year+y
+                #Write box edges
+                x0 = x0 + [tlon[0],tlon[2],tlon[0],tlon[1]]
+                x1 = x1 + [tlon[1],tlon[3],tlon[2],tlon[3]]
+                y0 = y0 + [tlat[0],tlat[2],tlat[0],tlat[1]]
+                y1 = y1 + [tlat[1],tlat[3],tlat[2],tlat[3]]
             if 'geoLocationPoint' in g:
                 point = g['geoLocationPoint']
                 print(point)
@@ -94,13 +80,15 @@ for h in hits['hits']['hits']:
                 place = g['geoLocationPlace']
                 print(place)
 
-
-
 source = ColumnDataSource(
-    data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier))
-print(source.data)
+    data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier,x0=x0,x1=x1,y0=y0,y1=y1,title=title,author=author,year=year))
+#print(source.data)
 circle = Circle(x="pt_lon", y="pt_lat", size=15, fill_color="blue", fill_alpha=0.8, line_color=None)
 fig.add_glyph(source, circle) 
+
+segment =\
+    Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="blue",line_width=3)
+fig.add_glyph(source, segment)
 
 open_url = CustomJS(args=dict(source=source), code="""
 source.inspected._1d.indices.forEach(function(index) {
@@ -111,7 +99,6 @@ source.inspected._1d.indices.forEach(function(index) {
 """)
 
 fig.add_tools(TapTool(callback=open_url, behavior="inspect"))
-
 
 output_file("stamen_toner_plot.html")
 show(fig)
