@@ -4,6 +4,7 @@ from bokeh.io import output_file, show
 from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
+from bokeh.palettes import brewer
 from bokeh.tile_providers import STAMEN_TERRAIN
 from bokeh.models import (
   CustomJS, TapTool, ColumnDataSource, Circle, Range1d, PanTool,
@@ -24,7 +25,7 @@ hover = HoverTool(tooltips=[
 ])
 
 fig = figure(tools=[hover,'wheel_zoom','pan'], active_scroll='wheel_zoom',\
-        plot_height=400, plot_width=1000)#,responsive=True)
+        plot_height=400, plot_width=1000)
 fig.axis.visible = False
 fig.add_tile(STAMEN_TERRAIN)
 
@@ -45,6 +46,10 @@ x0=[]
 y0=[]
 x1=[]
 y1=[]
+color=[]
+palette = brewer['RdYlBu'][11]
+
+print(palette)
 
 for h in hits['hits']['hits']:
     print(h['id'])
@@ -59,21 +64,20 @@ for h in hits['hits']['hits']:
                 tlon,tlat = transform(from_proj,to_proj,lon,lat)
                 pt_lat=pt_lat+tlat
                 pt_lon= pt_lon+tlon
-                iden = []
-                auth = []
-                t = []
-                y = []
+                cen = metadata['publicationYear'][1]
+                dec = metadata['publicationYear'][2]
+                if cen == '9':
+                    clo = palette[int(dec)-2]
+                    #First color is 1920
+                if cen == '0':
+                    clo = palette[int(dec)+8]
                 #We duplicate metadata for every point
                 for i in range(4):
-                    iden.append(metadata['identifier']['identifier'])
-                    auth.append(metadata['creators'][0]['creatorName'])
-                    t.append(metadata['titles'][0]['title'].split(':')[0])
-                    y.append(metadata['publicationYear'])
-                identifier=identifier+iden
-                author=author+auth
-                title=title+t
-                year = year+y
-                #Write box edges
+                    identifier.append(metadata['identifier']['identifier'])
+                    author.append(metadata['creators'][0]['creatorName'])
+                    title.append(metadata['titles'][0]['title'].split(':')[0])
+                    year.append(metadata['publicationYear'])
+                    color.append(clo)
                 x0 = x0 + [tlon[0],tlon[2],tlon[0],tlon[1]]
                 x1 = x1 + [tlon[1],tlon[3],tlon[2],tlon[3]]
                 y0 = y0 + [tlat[0],tlat[2],tlat[0],tlat[1]]
@@ -88,6 +92,14 @@ for h in hits['hits']['hits']:
                 author=author+[metadata['creators'][0]['creatorName']]
                 title=title+[metadata['titles'][0]['title'].split(':')[0]]
                 year = year+[metadata['publicationYear']]
+                cen = metadata['publicationYear'][1]
+                dec = metadata['publicationYear'][2]
+                if cen == '9':
+                    clo = palette[int(dec)-2]
+                    #First color is 1920
+                if cen == '0':
+                    clo = palette[int(dec)+8]
+                color.append(clo)
                 #Useless data so all fields are complete
                 x0 = x0 + [tlon]
                 x1 = x1 + [tlon]
@@ -99,13 +111,13 @@ for h in hits['hits']['hits']:
                 print(place)
 
 source = ColumnDataSource(
-    data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier,x0=x0,x1=x1,y0=y0,y1=y1,title=title,author=author,year=year))
+    data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier,x0=x0,x1=x1,y0=y0,y1=y1,title=title,author=author,year=year,color=color))
 #print(source.data)
-circle = Circle(x="pt_lon", y="pt_lat", size=15, fill_color="blue", fill_alpha=0.8, line_color=None)
+circle = Circle(x="pt_lon", y="pt_lat", size=10, fill_color="color", fill_alpha=0.8, line_color=None)
 fig.add_glyph(source, circle) 
 
 segment =\
-    Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="blue",line_width=3)
+    Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="color",line_width=3)
 fig.add_glyph(source, segment)
 
 open_url = CustomJS(args=dict(source=source), code="""
