@@ -2,12 +2,15 @@ import requests
 from caltechdata_api import decustomize_schema
 from bokeh.io import output_file, show
 from bokeh.plotting import figure
+from bokeh.resources import CDN
+from bokeh.embed import file_html
 from bokeh.tile_providers import STAMEN_TERRAIN
 from bokeh.models import (
   CustomJS, TapTool, ColumnDataSource, Circle, Range1d, PanTool,
 WheelZoomTool, BoxSelectTool, Segment, HoverTool
 )
 from pyproj import Proj, transform
+from jinja2 import Template
 
 url = 'https://data.caltech.edu/api/records'
 
@@ -20,7 +23,8 @@ hover = HoverTool(tooltips=[
     ("Year", "@year"),
 ])
 
-fig = figure(tools=[hover,'wheel_zoom','pan'], active_scroll='wheel_zoom', plot_height=600, plot_width=600)
+fig = figure(tools=[hover,'wheel_zoom','pan'], active_scroll='wheel_zoom',\
+        plot_height=400, plot_width=1000)#,responsive=True)
 fig.axis.visible = False
 fig.add_tile(STAMEN_TERRAIN)
 
@@ -59,6 +63,7 @@ for h in hits['hits']['hits']:
                 auth = []
                 t = []
                 y = []
+                #We duplicate metadata for every point
                 for i in range(4):
                     iden.append(metadata['identifier']['identifier'])
                     auth.append(metadata['creators'][0]['creatorName'])
@@ -75,8 +80,21 @@ for h in hits['hits']['hits']:
                 y1 = y1 + [tlat[1],tlat[3],tlat[2],tlat[3]]
             if 'geoLocationPoint' in g:
                 point = g['geoLocationPoint']
-                print(point)
+                tlon,tlat =\
+                transform(from_proj,to_proj,point['pointLongitude'],point['pointLatitude'])
+                pt_lat=pt_lat+[tlat]
+                pt_lon= pt_lon+[tlon]
+                identifier=identifier+[metadata['identifier']['identifier']]
+                author=author+[metadata['creators'][0]['creatorName']]
+                title=title+[metadata['titles'][0]['title'].split(':')[0]]
+                year = year+[metadata['publicationYear']]
+                #Useless data so all fields are complete
+                x0 = x0 + [tlon]
+                x1 = x1 + [tlon]
+                y0 = y0 + [tlat]
+                y1 = y1 + [tlat]
             if 'geoLocationPlace' in g:
+                #Not doing anything with these
                 place = g['geoLocationPlace']
                 print(place)
 
@@ -100,5 +118,11 @@ source.inspected._1d.indices.forEach(function(index) {
 
 fig.add_tools(TapTool(callback=open_url, behavior="inspect"))
 
-output_file("stamen_toner_plot.html")
-show(fig)
+infile = open('tem.html','r')
+tem = infile.read()
+template = Template(tem)
+file_done = file_html(fig, CDN, "CaltechDATA Map",template)
+outfile = open("caltechdata_map.html",'w')
+outfile.write(file_done)
+#output_file("caltechdata_map.html")
+#show(fig)

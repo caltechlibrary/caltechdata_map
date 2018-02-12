@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>{{ title|e if title else "Bokeh Plot" }}</title>
+        {{ bokeh_css }}
+        {{ bokeh_js }}
+        <style>
+        body {
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        border: 0;
+        width: 100%;
+        height: 100%;
+        color: black;
+        background-color: white;
+        font-family: Open Sans, Helvetica, Sans-Serif;
+        font-size: calc(1em+1vm);
+        }
+        section {
+        position: relative;
+        display: inline-block;
+        color: black;
+        background-color: white;
+        margin: 0;
+        padding-top 0;
+        padding-bottom: 0;
+        padding-left: 2em;
+        padding-right: 2em;
+        }       
+        .centered {
+        margin: 0 auto;
+        display:block;
+        text-align: left;
+        width: 1000px;
+        }
+        section p {
+        height: auto;
+        }
+        section h1 {
+        font-size: 1.32em;
+        }
+        section h2 {
+        font-size: 1.12em;
+        font-weight: italic;
+        }
+        section a:link, section a:visited {
+         /* orange: #FF6E1E; */
+        font-weight: normal;
+        }
+        section a:active, section a:hover, section a:focus {
+        /* orange: #FF6E1E; */
+        color: #FF6E1E;
+        }
+        a, a:link, a:visited {
+        color: #76777B;
+        background-color: inherit;
+        text-decoration: none;
+        }
+        a:active, a:hover, a:focus {
+        color: #FF6E1E;
+        font-weight: bolder;
+        }
+        </style>
+    </head>
+    <body>
+        <section>
+        <h1>Caltech Division of Geological and Planetary Sciences Theses</h1>
+
+        <p>This map shows the coordinates of content in <a href="https://data.caltech.edu">CaltechDATA</a> 
+        associated with theses from the Geological and Planetary Science
+        Division at Caltech.  Data from historic theses include maps and drawings that were included
+        as supplemental pocket material.</p>
+        <p>You can zoom with your mouse to see more detail and drag
+        to move the map.  Click on any point or bounding box to see the
+        original item in <a href="https://data.caltech.edu">CaltechDATA</a>.
+        </p>  
+
+        <div id="graphs" class="centered">
+        {{ plot_div|indent(8) }}
+        {{ plot_script|indent(8) }}
+        </div>
+
+        <h2>Want your thesis to show up on the map?</h2>
+        <p>Upload files associated with your thesis to <a
+            href="https://data.caltech.edu">CaltechDATA</a> and include a
+        geolocation point or area.  You'll also have to include the keywords 'gps' and 'thesis' in the
+        record.  If you run into any problems just send us an 
+        <a href="mailto:data@caltech.edu">email</a>.
+        </p>
+        <h2>Did you complete your thesis in the Caltech GPS Division?</h2>
+        <p>
+        Send us an <a href="mailto:data@caltech.edu">email</a> and we can get
+        your maps transferred to CaltechDATA.
+        </p>
+        <h2>Want to improve this map?</h2>
+        <p>
+        The code to generate the map is available on <a
+            href="https://github.com/caltechlibrary/caltechdata_map">GitHub</a> 
+        and we accept pull requests for improvements.
+        </p>
+
+        </section>
+
+        <div style="box-sizing: border-box; margin-left: auto; margin-right: auto; margin-top: 1em; max-width: 100%; width: 100%;">
+        <div style="background-color: rgb(118, 119, 123); border-top: 1px solid rgba(255,255,255,0.12); box-sizing: border-box; clear: both; float: left; margin: 0; padding-bottom: 1em; padding-left: 0.9375rem; padding-right: 0.9375rem; padding-top: 2em; text-align: center; width: 100%;">
+
+            <ul style="box-sizing: border-box; display: block; font-size: 0.9rem; line-height: 1.6; list-style-position: outside; margin: 0 -0.625rem; padding: 0;">
+              <li style="box-sizing: border-box; clear: both; display: block; float: left; height: auto; list-style: none; padding: 0 0.625rem 1.875rem 1.25rem; width: 33.3333333333%;">
+                <p style="font-family: sans-serif; font-size: 0.8em; margin-bottom: 0; color: rgb(255, 255, 255);"><img alt="Caltech Library logo" title="Caltech Library" height="54" width="100" class="media-element file-default" typeof="foaf:Image" src="http://library.caltech.edu/sites/default/files/logos/CLwhitewhiteVerticalwww.png" /></p>
+              </li>
+              <li style="box-sizing: border-box; clear: none; display: block; float: left; height: auto; list-style: none; padding: 0 0.625rem 1.875rem 1.25rem; width: 33.3333333333%;">
+                <p style="font-family: sans-serif; font-size: 0.8em; margin-bottom: 0; color: rgb(255, 255, 255);">Mail Code 1-43 | 1200 E California Blvd | Pasadena, CA 91125-4300</p>
+                <p style="font-family: sans-serif; font-size: 0.8em; margin: 0; color: rgb(255, 255, 255);"><a href="tel:+1-626-395-3405" style="color: rgb(255, 255, 255); text-decoration: none;">(626) 395-3405</a></p>
+                <p style="font-family: sans-serif; font-size: 0.8em; margin-bottom: 0; color: rgb(255, 255, 255);"><a href="/contact" style="color: rgb(255, 255, 255); text-decoration: none;">Contact Us</a></p>
+              </li>
+              <li style="box-sizing: border-box; clear: none; display: inline-block; float: none; height: auto; list-style: none; padding: 0 0.625rem 1.875rem 1.25rem; width: 33.3333333333%;">
+                <p style="font-family: sans-serif; font-size: 0.8em; margin-bottom: 0; color: rgb(255, 255, 255);"><a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license"><img alt="Creative Commons License" src="http://mirrors.creativecommons.org/presskit/icons/cc.svg" style="border-width: 0; height: 25px; width: 25px;" /></a> <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license"><img alt="Creative Commons License" src="http://mirrors.creativecommons.org/presskit/icons/by.svg" style="border-width: 0; height: 25px; width: 25px;" /></a> <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license"><img alt="Creative Commons License" src="http://mirrors.creativecommons.org/presskit/icons/nc.svg" style="border-width: 0; height: 25px; width: 25px;" /></a> <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license"><img alt="Creative Commons License" src="http://mirrors.creativecommons.org/presskit/icons/sa.svg" style="border-width: 0; height: 25px; width: 25px;" /></a></p>
+                <p style="color: rgb(255, 255, 255); font-family: sans-serif; font-size: 0.8em; margin: 0; padding-top: 0.5em;"><a href="https://www.facebook.com/CaltechLibrary"><img height="25" width="25" typeof="foaf:Image" src="http://library.caltech.edu/sites/default/files/FB-f-Logo__white_50.png" alt="" /></a> <a href="https://twitter.com/caltechlibrary"><img height="25" width="25" typeof="foaf:Image" src="http://library.caltech.edu/sites/default/files/Twitter_Social_Icon_Square_White.svg" alt="" /></a></p>
+              </li>
+            </ul>
+
+      </div>
+    </div>
+    
+    </body>
+</html>
