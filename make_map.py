@@ -8,7 +8,7 @@ from bokeh.palettes import brewer
 from bokeh.tile_providers import STAMEN_TERRAIN
 from bokeh.models import (
   CustomJS, TapTool, ColumnDataSource, Circle, Range1d, PanTool,
-WheelZoomTool, BoxSelectTool, Segment, HoverTool
+WheelZoomTool, BoxSelectTool, Segment, HoverTool, Legend
 )
 from pyproj import Proj, transform
 from jinja2 import Template
@@ -25,7 +25,7 @@ hover = HoverTool(tooltips=[
 ])
 
 fig = figure(tools=[hover,'wheel_zoom','pan'], active_scroll='wheel_zoom',\
-        plot_height=400, plot_width=1000)
+        plot_height=500, plot_width=1000)
 fig.axis.visible = False
 fig.add_tile(STAMEN_TERRAIN)
 
@@ -47,9 +47,9 @@ y0=[]
 x1=[]
 y1=[]
 color=[]
-palette = brewer['RdYlBu'][11]
-
-print(palette)
+palette = brewer['Spectral'][11]
+lkey =\
+["1920's","1930's","1940's","1950's","1960's","1970's","1980's","1990's","2000's","2010's","2020's"]
 
 for h in hits['hits']['hits']:
     print(h['id'])
@@ -111,14 +111,15 @@ for h in hits['hits']['hits']:
                 print(place)
 
 source = ColumnDataSource(
-    data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier,x0=x0,x1=x1,y0=y0,y1=y1,title=title,author=author,year=year,color=color))
-#print(source.data)
-circle = Circle(x="pt_lon", y="pt_lat", size=10, fill_color="color", fill_alpha=0.8, line_color=None)
-fig.add_glyph(source, circle) 
-
+    data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier,x0=x0,x1=x1,y0=y0,y1=y1,\
+            title=title,author=author,year=year,color=color))
 segment =\
     Segment(x0="x0",y0="y0",x1="x1",y1="y1",line_color="color",line_width=3)
 fig.add_glyph(source, segment)
+    
+circle = Circle(x="pt_lon",\
+        y="pt_lat",size=8,fill_color="color",fill_alpha=1.0)#, line_color=None)
+fig.add_glyph(source, circle) 
 
 open_url = CustomJS(args=dict(source=source), code="""
 source.inspected._1d.indices.forEach(function(index) {
@@ -129,6 +130,14 @@ source.inspected._1d.indices.forEach(function(index) {
 """)
 
 fig.add_tools(TapTool(callback=open_url, behavior="inspect"))
+items = []
+#Dummy points for legend
+for i in range(len(lkey)):
+    circle = Circle(x=0,y=0,fill_color=palette[i],size=0,line_color=None)
+    render = fig.add_glyph(circle)
+    items.append((lkey[i],[render]))
+legend = Legend(items = items, location=(0,0), orientation="horizontal") 
+fig.add_layout(legend,'below')
 
 infile = open('tem.html','r')
 tem = infile.read()
