@@ -24,7 +24,8 @@ hover = HoverTool(tooltips=[
     ("Year", "@year"),
 ])
 
-fig = figure(tools=[hover,'wheel_zoom','pan'], active_scroll='wheel_zoom',\
+fig =\
+figure(tools=[hover,'zoom_in','zoom_out','wheel_zoom','pan','undo','redo','help'], active_scroll='wheel_zoom',\
         plot_height=500, plot_width=1000)
 fig.axis.visible = False
 fig.add_tile(STAMEN_TERRAIN)
