@@ -1,6 +1,11 @@
-# caltechdata_map
+# Map interface for CaltechDATA 
 
-Map interface for CaltechDATA 
+[![DOI](https://data.caltech.edu/badge/115029918.svg)](https://data.caltech.edu/badge/latestdoi/115029918)
+
+Shows a map of theses data files from the Geological and Planetary Science division that
+have geolocation information in CaltechDATA.
+Most files are maps and drawings from the supplemental materials pockets of
+theses.
 
 Requires Python 3 (Recommended via Anaconda https://www.anaconda.com/download)
 with reqests, pyproj, and bokey libraries.  Looks best with bokeh >= 0.12.14.
@@ -13,7 +18,7 @@ generated - view it on a web browser.
 
 ## Configuration
 
-To run automatically on a Ubuntu server and power an S3-hosted site.
+To run automatically on a Ubuntu server and power an S3-hosted site:
 
 Install aws cli utility `pip install awscli --upgrade --user`
 Configure aws cli following the instructions at https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
