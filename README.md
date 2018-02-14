@@ -2,11 +2,19 @@
 
 Map interface for CaltechDATA 
 
-In development. 
-
-Requires Python 3 (Recommended via Anaconda https://www.anaconda.com/download) with reqests library.
+Requires Python 3 (Recommended via Anaconda https://www.anaconda.com/download)
+with reqests and pyproj libraries and caltechdata_api https://github.com/caltechlibrary/caltechdata_api.
 
 ## Setup 
 
-## TODO
+Type `python makemap.py` to generate the map.  caltechdata_map.html will be
+generated - view it on a web browser.
+
+## Configuration
+
+To run automatically on a Ubuntu server and power an S3-hosted site.
+
+Install aws cli utility `pip install awscli --upgrade --user`
+Configure aws cli following the instructions at https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
+Edit crontab by typing `crontab -c` and typing `*/5 * * * * /home/ubuntu/caltechdata_map/run.sh`
 
