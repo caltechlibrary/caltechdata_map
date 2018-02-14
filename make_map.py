@@ -15,7 +15,7 @@ from jinja2 import Template
 
 url = 'https://data.caltech.edu/api/records'
 
-response = requests.get(url+'/?size=1000&q=subjects:thesis')
+response = requests.get(url+'/?size=1000&q=subjects:"thesis"+"gps"')
 hits = response.json()
 
 hover = HoverTool(tooltips=[

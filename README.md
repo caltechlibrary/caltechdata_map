@@ -3,7 +3,8 @@
 Map interface for CaltechDATA 
 
 Requires Python 3 (Recommended via Anaconda https://www.anaconda.com/download)
-with reqests and pyproj libraries and caltechdata_api https://github.com/caltechlibrary/caltechdata_api.
+with reqests, pyproj, and bokey libraries.  Looks best with bokeh >= 0.12.14.
+Also requires caltechdata_api from https://github.com/caltechlibrary/caltechdata_api.
 
 ## Setup 
 
