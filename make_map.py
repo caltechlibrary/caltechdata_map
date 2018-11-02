@@ -8,7 +8,7 @@ from bokeh.palettes import brewer
 from bokeh.tile_providers import STAMEN_TERRAIN
 from bokeh.models import (
   CustomJS, TapTool, ColumnDataSource, Circle, Range1d, PanTool,
-WheelZoomTool, BoxSelectTool, Segment, HoverTool, Legend
+WheelZoomTool, BoxSelectTool, Segment, HoverTool, Legend, OpenURL
 )
 from pyproj import Proj, transform
 from jinja2 import Template
@@ -34,7 +34,7 @@ fig.add_tile(STAMEN_TERRAIN)
 from_proj = Proj(init="epsg:4326")
 to_proj = Proj(init="epsg:3857")
 
-print(len(hits['hits']['hits']))
+print("Number of records: ",len(hits['hits']['hits']))
 
 #Collect data for plot
 pt_lat=[]
@@ -53,7 +53,7 @@ lkey =\
 ["1920's","1930's","1940's","1950's","1960's","1970's","1980's","1990's","2000's","2010's","2020's"]
 
 for h in hits['hits']['hits']:
-    print(h['id'])
+    print("Adding record: ",h['id'])
     metadata = decustomize_schema(h['metadata'])
     if 'geoLocations' in metadata:
         geo = metadata['geoLocations']
@@ -106,10 +106,9 @@ for h in hits['hits']['hits']:
                 x1 = x1 + [tlon]
                 y0 = y0 + [tlat]
                 y1 = y1 + [tlat]
-            if 'geoLocationPlace' in g:
-                #Not doing anything with these
-                place = g['geoLocationPlace']
-                print(place)
+            #Don't know what to do with just place names
+            #if 'geoLocationPlace' in g:
+            #    place = g['geoLocationPlace']
 
 source = ColumnDataSource(
     data=dict(pt_lat=pt_lat,pt_lon=pt_lon,identifier=identifier,x0=x0,x1=x1,y0=y0,y1=y1,\
@@ -119,18 +118,11 @@ segment =\
 fig.add_glyph(source, segment)
     
 circle = Circle(x="pt_lon",\
-        y="pt_lat",size=8,fill_color="color",fill_alpha=1.0)#, line_color=None)
+        y="pt_lat",size=8,fill_color="color")
 fig.add_glyph(source, circle) 
 
-open_url = CustomJS(args=dict(source=source), code="""
-source.inspected._1d.indices.forEach(function(index) {
-    var name = source.data["identifier"][index];
-    var url = "https://doi.org/" + encodeURIComponent(name);
-    window.open(url);
-});
-""")
-
-fig.add_tools(TapTool(callback=open_url, behavior="inspect"))
+url = "https://doi.org/@identifier"
+fig.add_tools(TapTool(callback=OpenURL(url=url)))
 items = []
 #Dummy points for legend
 for i in range(len(lkey)):
@@ -146,5 +138,3 @@ template = Template(tem)
 file_done = file_html(fig, CDN, "CaltechDATA Map",template)
 outfile = open("caltechdata_map.html",'w')
 outfile.write(file_done)
-#output_file("caltechdata_map.html")
-#show(fig)
