@@ -5,7 +5,7 @@ from bokeh.plotting import figure
 from bokeh.resources import CDN
 from bokeh.embed import file_html
 from bokeh.palettes import brewer
-from bokeh.tile_providers import STAMEN_TERRAIN, get_provider
+from bokeh.tile_providers import Vendors, get_provider
 from bokeh.models import (
     CustomJS,
     TapTool,
@@ -39,7 +39,7 @@ fig = figure(
     plot_width=1000,
 )
 fig.axis.visible = False
-tile_provider = get_provider(STAMEN_TERRAIN)
+tile_provider = get_provider(Vendors.STAMEN_TERRAIN)
 fig.add_tile(tile_provider)
 
 # transform lng/lat to meters
